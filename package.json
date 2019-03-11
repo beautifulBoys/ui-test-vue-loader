@@ -1,0 +1,30 @@
+{
+  "name": "webpack-replace-loader",
+  "version": "1.3.0",
+  "author": "beautifulBoys <1298947916.com>",
+  "description": "A loader for UI test ",
+  "keywords": [
+    "webpack",
+    "loader",
+    "webpack-loader",
+    "ui",
+    "ui-test",
+    "test",
+    "id",
+    "class"
+  ],
+  "scripts": {},
+  "main": "index.js",
+  "dependencies": {
+    "parse5": "^5.1.0",
+    "loader-utils": "^1.1.0"
+  },
+  "devDependencies": {
+    "webpack": "1 || 2 || 3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beautifulBoys/ui-test-vue-loader.git"
+  },
+  "private": false
+}
