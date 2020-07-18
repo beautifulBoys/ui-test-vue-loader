@@ -18,7 +18,7 @@ module.exports = {
       ...
       {
         test: /\.vue$/,
-        loader: resolve('isesol-ui/lib/webpack/uiTestLoader'),
+        loader: 'ui-test-vue-loader',
         options: {
           delete: process.env.ENV === 'prod',
           startPath: 'src\\',
