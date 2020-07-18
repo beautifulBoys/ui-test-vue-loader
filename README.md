@@ -1,184 +1,141 @@
-# webpack-replace-loader
-> 一个 webpack 打包时用来替换字符串的 webpack-loader 。
-
-[中文文档](https://github.com/beautifulBoys/webpack-replace-loader)　　 [English document](https://github.com/beautifulBoys/webpack-replace-loader/tree/master/docs)
-
-## 使用场景举例
-1 . 在使用 webpack 项目打包的时候，用来将开发环境的请求 URL 替换为 生产环境的 URL 。
-
-2 . 项目统一查找调整页面配色样式 `color` , 将 `#00ff00` 替换为 `#ff0700` 。
-
-3 . 大型项目中，依照打包策略在相关文件中写入不同内容。
-
-
-## 安装
-
-将 `webpack-replace-loader` 作为依赖安装到项目:
-```shell
- npm install webpack-replace-loader --save-dev
-```
-## 配置使用
-配置webpack打包策略：
-```js
-module: {
-  loaders: [
-    ...
-    {
-      test: /\.vue$/,
-      loader: resolve('build/ui-test-loader.js'),
-      options: {
-        delete: false,
-        startPath: 'src\\',
-        id: { style: 'test-[path]-[value]', attrName: 'test-id' },
-        class: { style: 'test-[path]-[ext]-[value]-last', attrName: 'test-class' }
-      }
-    }
-    ...
-  ]
-}
-```
-
-## 示例
- test.js :
- ```js
-  var title = '$Title';
-  function showTitle () {
-    document.title = title;
-  }
- ```
- 通过以上 `webpack` 配置打包后生成 test.js ：
-
-```js
-var title = '社会主义核心价值观';
-function showTitle() {
-  document.title = title;
-}
-```
-在上例中，`$Title` 的作用仅仅是提供一个查找字符串的 锚点 ，并没有实际意义。
-
-## Webpack 的其他配置方法
-1 . 将 a.js 中的 BaseUrl 只替换第一个为 https://www.baidu.com/api/ ; Title 全部替换为 " 百度开放接口 " 。
-
-2 . 将 b.js 中的 Location 全部替换为 " BeiJing " 。
-
-```js
-module: {
-  loaders: [
-    ...
-    {
-      test: /a\.js$/,
-      loader: 'webpack-replace-loader',
-      options: {
-        arr: [
-          {search: 'BaseUrl', replace: 'https://www.baidu.com/api/'},
-          {search: 'Title', replace: '百度开放接口', attr: 'g'}
-        ]
-      }
-    },
-    {
-      test: /b\.js$/,
-      loader: 'webpack-replace-loader',
-      options: {
-        search: 'Location',
-        replace: 'https://www.baidu.com/api/',
-        attr: 'g'
-      }
-    }
-    ...
-  ]
-}
-```
-只要你的替换锚点不相同，你也可以合并写：
-
-```js
-module: {
-  loaders: [
-    ...
-    {
-      test: /(a\.js|b.js|c\.js)$/,
-      loader: 'webpack-replace-loader',
-      options: {
-        arr: [
-          {search: 'BaseUrl', replace: 'https://www.baidu.com/api/'},
-          {search: 'Title', replace: '百度开放接口', attr: 'g'}
-          {search: 'Location', replace: 'BeiJing', attr: 'g'}
-        ]
-      }
-    }
-    ...
-  ]
-}
-```
-包括 .css 文件，.less 文件等 ： 将`color: red;` 修改为 `color: #0cff00;`
-```css
-.test {
-  color: red;
-}
-```
-配置：
-```js
-options: {
-  search: 'color: red;',
-  replace: 'color: #0cff00;',
-  attr: 'g'
-}
-```
-替换后：
-```css
-.test {
-  color: #0cff00;
-}
-```
-
- 将 a.hml 文件 的 `div` 标签换为 `span` 标签。将 class `text` 换为 `box` :
-
-```html
-<span>$DOM</span>
-```
-配置如下：
-```js
-options: {
-  arr: [
-    {search: 'span', replace: 'div', attr: 'g'},
-    {search: '$DOM', replace: `
-      <span class="box">
-        <span class="text">社会主义</span>
-      </span>
-    `}
-  ]
-}
-```
-
-替换后：
-```html
-<div>
-  <span class="box">
-    <span class="text">社会主义</span>
-  </span>
-</div>
-```
-
-## 测试
-在 test 目录下进行执行：
-```shell
- npm install
-```
-```shell
- npm run test
-```
-用浏览器打开：test/dist/index.html。
+# ui-test-vue-loader 加载器
 
 ## 说明
-1.2版本后，已做全字符转义，包含但不限于下列情况均可替换。
+
+用于辅助 UI 测试，项目编译打包时在目标节点上添加 ID 或 CLASS ，便于自动化工具提取节点。
+
+* 后期将会抽空拓展功能，不再局限于仅在Vue项目中使用，敬请期待！
+
+## 配置使用
+
+webpack.base.conf.js
 ```js
-search: '<a class__';
-search: '.a /bcc .g';
-search: '[.a]';
-search: '--{a-x}';
-search: '({[list]})';
-search: '/$/abb^';
-search: '<c><d></>';
-search: '?+^$@><-';
+module.exports = {
+  ...
+  module: {
+    rules: [
+      ...
+      {
+        test: /\.vue$/,
+        loader: resolve('isesol-ui/lib/webpack/uiTestLoader'),
+        options: {
+          delete: process.env.ENV === 'prod',
+          startPath: 'src\\',
+          id: { style: 'test-[path]-[value]', attrName: 'test-id' },
+          class: { style: 'test-[path]-[ext]-[value]-last', attrName: 'test-class', startPath: 'src\\components\\', delete: false }
+        }
+      },
+      ...
+    ]
+  },
+  ...
+}
 ```
 
-<img src="https://raw.githubusercontent.com/beautifulBoys/webpack-replace-loader/master/test/test.png">
+## 参数说明
+
+### delete
+
+* 类型：`Boolean`
+* 默认值：`false`，非必需
+* 描述：正式环境标签中不需要`test-class`属性出现，则配置 delete: true 即可删除。
+
+### startPath
+
+* 类型：`String`
+* 默认值：`src\\`，非必需
+* 描述：文件路径截取有效区间，startPath 即为开始截取字符串。
+
+### style
+
+* 类型：`String`
+* 默认值：`[path]-[value]`，非必需
+* 描述：最终输出的 ID 和 CLASS 字符样式。其中提供部分参数供选择，如下
+
+| 名称 | 说明 | 举例
+| - | - | - |
+| path | 截取后的有效文件路径 | components-pages-order-manage |
+| value | 标签设置的名称 | submit-btn |
+| ext | 文件后缀名 | vue |
+
+### id 
+
+* 类型：`Object`
+* 默认值：无默认值，非必需
+* 描述：id 为真，则会转换目标 ID ，如果没有则不转换。
+
+### class
+
+* 类型：`Object`
+* 默认值：无默认值，非必需
+* 描述：class 存在，则会转换目标 CLASS ，如果没有则不转换。
+
+### attrName
+
+* 类型：`String`
+* 默认值：`test-class | test-id`，非必需
+* 描述：需要转换的标签属性
+
+## 其他说明
+
+除了 attrName 外，其他参数如果在 options.class 和 options.id 中一致的话，都可以提取到 options 中。
+```js
+options: {
+  delete: process.env.ENV === 'prod',
+  startPath: 'src\\',
+  style: 'test-[path]-[value]',
+  id: { attrName: 'test-id' },
+  class: { attrName: 'test-class', delete: false }
+}
+```
+最终会被解析为如下形式去执行：
+```js
+options: {
+  id: { attrName: 'test-id', delete: process.env.ENV === 'prod', startPath: 'src\\', style: 'test-[path]-[value]' },
+  class: { attrName: 'test-class', delete: false, startPath: 'src\\', style: 'test-[path]-[value]' }
+}
+```
+
+## 使用举例
+example/src/app/detail.vue
+```html
+<template>
+  <div class="title" test-class="title">示例</div>
+  <label>用户名：</label>
+  <input class="username" type="text"  test-id="username"/>
+  <ul>
+    <li test-class="first-text">第一行文字</li>
+    <li>第二行文字</li>
+    <li test-id="third-text">第三行文字</li>
+    <li>第四行文字</li>
+  </ul>
+  <p>我是一段示例文本，我是一段示例文本，我是一段示例文本，我是一段示例文本，我是一段示例文本。</p>
+  <button test-id="submit" class="btn" test-class="submit">确认</button>
+</template>
+```
+build/webpack.base.conf.js
+```js
+options: {
+  delete: false,
+  startPath: 'src\\',
+  style: 'test-[path]-[value]',
+  id: { attrName: 'test-id' },
+  class: { attrName: 'test-class' }
+}
+```
+最终输出如下：
+```html
+<template>
+  <div class="title test-app/detail-title">示例</div>
+  <label>用户名：</label>
+  <input type="text" id="test-app/detail-username" class="username">
+  <ul>
+    <li class="test-app/detail-first-text">第一行文字</li>
+    <li>第二行文字</li>
+    <li id="test-app/detail-third-text">第三行文字</li>
+    <li>第四行文字</li>
+  </ul>
+  <p>我是一段示例文本，我是一段示例文本，我是一段示例文本，我是一段示例文本，我是一段示例文本。</p>
+  <button id="test-app/detail-submit" class="btn test-app/detail-submit">确认</button>
+</template>
+```
